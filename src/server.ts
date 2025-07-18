@@ -1,11 +1,16 @@
 import 'module-alias/register';
 import Express from "express";
-import { logInWithPassword, wadwa } from "@/test/test";
+import { sign, verify } from "./token/token"
 
 const app = Express();
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  logInWithPassword();
+
+  sign({ name: "ali" }).then((token) => {
+    console.log(token);
+    verify(token);
+  })
+
   console.log(`Server running on port ${PORT}`);
 });
