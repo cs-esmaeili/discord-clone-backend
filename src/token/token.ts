@@ -5,8 +5,8 @@ import path from 'path';
 
 const alg = 'RS256';
 
-const privateKeyPem = fs.readFileSync(path.join(process.cwd(), "keys", "private.key"), 'utf-8');
-const publicKeyPem = fs.readFileSync(path.join(process.cwd(), "keys", "public.key"), 'utf-8');
+const privateKeyPem = fs.readFileSync(path.join(process.cwd(), "dist", "keys", "private.key"), 'utf-8');
+const publicKeyPem = fs.readFileSync(path.join(process.cwd(), "dist", "keys", "public.key"), 'utf-8');
 
 export const sign = async (payload: JWTPayload): Promise<string> => {
 

@@ -1,5 +1,5 @@
-
-keys/*
+dist
+*.key
 
 # Logs
 logs

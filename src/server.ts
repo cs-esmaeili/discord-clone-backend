@@ -1,11 +1,14 @@
 import 'module-alias/register';
-import Express from "express";
+import { createApp } from "@/app";
+
 import { sign, verify } from "./token/token"
 
-const app = Express();
+const app = createApp();
+
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+
+app?.listen(PORT, () => {
 
   sign({ name: "ali" }).then((token) => {
     console.log(token);
