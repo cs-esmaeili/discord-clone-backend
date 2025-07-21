@@ -34,3 +34,27 @@ export const verify = async (token: string): Promise<JWTPayload | null> => {
     }
 }
 
+
+export const signAccessToken = async (payload: JWTPayload): Promise<string> => {
+
+    const privateKey = await importPKCS8(privateKeyPem, alg);
+    const jwt = await new SignJWT(payload)
+        .setProtectedHeader({ alg })
+        .setIssuedAt()
+        .setExpirationTime('15m')
+        .sign(privateKey);
+
+    return jwt;
+}
+
+export const signRefreshToken  = async (payload: JWTPayload): Promise<string> => {
+
+    const privateKey = await importPKCS8(privateKeyPem, alg);
+    const jwt = await new SignJWT(payload)
+        .setProtectedHeader({ alg })
+        .setIssuedAt()
+        .setExpirationTime('15d')
+        .sign(privateKey);
+
+    return jwt;
+}

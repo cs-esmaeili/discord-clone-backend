@@ -1,6 +1,6 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import { sign } from "@/auth/token";
+import { signAccessToken, signRefreshToken } from "@/auth/token";
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
@@ -14,8 +14,7 @@ passport.use(new GoogleStrategy(
     clientSecret: GOOGLE_CLIENT_SECRET,
     callbackURL: GOOGLE_CALLBACK_URL,
   },
-  async (accessToken, refreshToken, profile, done) => {
-    // 👇 اطلاعات کاربر را اینجا می‌گیریم و JWT می‌سازیم
+  async (accessTokenFromGoogle, refreshTokenFromGoogle, profile, done) => {
     const userPayload = {
       id: profile.id,
       name: profile.displayName,
@@ -23,7 +22,9 @@ passport.use(new GoogleStrategy(
       picture: profile.photos?.[0].value,
     };
 
-    const token = await sign(userPayload);
-    done(null, token); // توکن را پاس می‌دهیم
+    // const accessToken = await signAccessToken(userPayload);
+    const refreshToken = await signRefreshToken(userPayload);
+
+    done(null, { refreshToken });
   }
 ));
