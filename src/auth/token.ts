@@ -23,9 +23,8 @@ export const sign = async (payload: JWTPayload): Promise<string> => {
 
 export const verify = async (token: string): Promise<JWTPayload | null> => {
 
-    const publicKey = await importSPKI(publicKeyPem, alg);
-
     try {
+        const publicKey = await importSPKI(publicKeyPem, alg);
         const { payload } = await jwtVerify(token, publicKey);
         console.log('✅ Token is valid');
         return payload;
