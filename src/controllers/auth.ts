@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { verify, signAccessToken } from '@/auth/token';
-import { error } from 'console';
 
 export const googleCallback = (req: Request, res: Response, next: NextFunction) => {
 
@@ -8,18 +7,20 @@ export const googleCallback = (req: Request, res: Response, next: NextFunction) 
 
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        path: '/auth/refreshtoken',
+        secure: false,
+        sameSite: 'lax',
         maxAge: 1000 * 60 * 60 * 24 * 7,
+        path: '/',
     });
 
-    res.redirect(`http://localhost:3001`);
+    res.redirect(`http://localhost:3001/home`);
 };
-
 export const refreshtoken = async (req: Request, res: Response, next: NextFunction) => {
 
     const refreshToken = req.cookies.refreshToken;
+    console.log(refreshToken);
+    
+
     if (!refreshToken) return res.status(401).json({ error: 'No refresh token' });
 
     try {
@@ -30,7 +31,8 @@ export const refreshtoken = async (req: Request, res: Response, next: NextFuncti
         }
 
         const newAccessToken = await signAccessToken(payloadRefreshToken);
-
+        console.log(newAccessToken);
+        
         res.json({ accessToken: newAccessToken });
 
     } catch (err) {

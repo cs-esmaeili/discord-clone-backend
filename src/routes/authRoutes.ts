@@ -8,6 +8,6 @@ router.get("/google", passport.authenticate("google", { scope: ["profile", "emai
 
 router.get("/google/callback", passport.authenticate("google", { session: false }), googleCallback);
 
-router.get("/refreshtoken", refreshtoken);
+router.post("/refreshtoken", refreshtoken);
 
 export default router; 
