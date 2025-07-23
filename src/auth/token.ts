@@ -5,6 +5,9 @@ import path from 'path';
 
 const alg = 'RS256';
 
+const REFRESH_TOKEN_EXPIRE_TIME = process.env.REFRESH_TOKEN_EXPIRE_TIME!;
+const ACCESS_TOKEN_EXPIRE_TIME = process.env.ACCESS_TOKEN_EXPIRE_TIME!;
+
 const privateKeyPem = fs.readFileSync(path.join(process.cwd(), "dist", "keys", "private.key"), 'utf-8');
 const publicKeyPem = fs.readFileSync(path.join(process.cwd(), "dist", "keys", "public.key"), 'utf-8');
 
@@ -26,10 +29,8 @@ export const verify = async (token: string): Promise<JWTPayload | null> => {
     try {
         const publicKey = await importSPKI(publicKeyPem, alg);
         const { payload } = await jwtVerify(token, publicKey);
-        console.log('✅ Token is valid');
         return payload;
     } catch (err) {
-        console.error('❌ Invalid token', err);
         return null;
     }
 }
@@ -41,19 +42,19 @@ export const signAccessToken = async (payload: JWTPayload): Promise<string> => {
     const jwt = await new SignJWT(payload)
         .setProtectedHeader({ alg })
         .setIssuedAt()
-        .setExpirationTime('15m')
+        .setExpirationTime(ACCESS_TOKEN_EXPIRE_TIME)
         .sign(privateKey);
 
     return jwt;
 }
 
-export const signRefreshToken  = async (payload: JWTPayload): Promise<string> => {
+export const signRefreshToken = async (payload: JWTPayload): Promise<string> => {
 
     const privateKey = await importPKCS8(privateKeyPem, alg);
     const jwt = await new SignJWT(payload)
         .setProtectedHeader({ alg })
         .setIssuedAt()
-        .setExpirationTime('15d')
+        .setExpirationTime(REFRESH_TOKEN_EXPIRE_TIME)
         .sign(privateKey);
 
     return jwt;

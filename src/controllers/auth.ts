@@ -1,25 +1,31 @@
 import { Request, Response, NextFunction } from 'express';
 import { verify, signAccessToken } from '@/auth/token';
+import ms, { StringValue } from 'ms';
+
+const REFRESH_TOKEN_EXPIRE_TIME = process.env.REFRESH_TOKEN_EXPIRE_TIME! as StringValue;
+const GOOGLE_FRONTEND_CALLBACK_URL = process.env.GOOGLE_FRONTEND_CALLBACK_URL! as string;
 
 export const googleCallback = (req: Request, res: Response, next: NextFunction) => {
 
-    const { accessToken, refreshToken } = req.user as { accessToken: string, refreshToken: string };
+    const { refreshToken } = req.user as { accessToken: string, refreshToken: string };
+
+    const maxAge = ms(REFRESH_TOKEN_EXPIRE_TIME);
 
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: false,
         sameSite: 'lax',
-        maxAge: 1000 * 60 * 60 * 24 * 7,
+        maxAge,
         path: '/',
     });
 
-    res.redirect(`http://localhost:3001/home`);
+    res.redirect(GOOGLE_FRONTEND_CALLBACK_URL);
 };
+
+
 export const refreshtoken = async (req: Request, res: Response, next: NextFunction) => {
 
     const refreshToken = req.cookies.refreshToken;
-    console.log(refreshToken);
-    
 
     if (!refreshToken) return res.status(401).json({ error: 'No refresh token' });
 
@@ -31,8 +37,7 @@ export const refreshtoken = async (req: Request, res: Response, next: NextFuncti
         }
 
         const newAccessToken = await signAccessToken(payloadRefreshToken);
-        console.log(newAccessToken);
-        
+
         res.json({ accessToken: newAccessToken });
 
     } catch (err) {
