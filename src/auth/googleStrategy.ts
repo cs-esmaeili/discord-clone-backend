@@ -1,6 +1,6 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import { signAccessToken, signRefreshToken } from "@/auth/token";
+import { signRefreshToken } from "@/auth/token";
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
@@ -22,7 +22,6 @@ passport.use(new GoogleStrategy(
       picture: profile.photos?.[0].value,
     };
 
-    // const accessToken = await signAccessToken(userPayload);
     const refreshToken = await signRefreshToken(userPayload);
 
     done(null, { refreshToken });
